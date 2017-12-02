@@ -70,7 +70,7 @@ Scene * Scene::initTestScene(int N){
     Material * test = new Material();
     test->type = DIFFUSE;
     test->kr = 0.03;
-    test->ambient = Color(0.0,0.0,0.0,1.0);
+    test->ambient = Color(1.0,1.0,0.0,1.0);
     test->diffuse = Color(0.0,0.6,0.6,1.0);
     test->specular = Color(0.2,0.2,0.2,1.0);
     
@@ -83,7 +83,7 @@ Scene * Scene::initTestScene(int N){
     Material * test2 = new Material();
     test2->kr = 0.25;
     test2->type = DIFFUSE;
-    test2->ambient = Color(0.4,0.25,0.25,1.0);
+    test2->ambient = Color(0.4,0.25,0.8,1.0);
     test2->diffuse = Color(0.5,0.1,0.1,1.0);
     test2->specular = Color(0.2,0.2,0.2,1.0);
 
@@ -128,8 +128,8 @@ Scene * Scene::initTestScene(int N){
     // Add in left square
     t1 = new Triangle(p3,p1,p8,n3);
     t2 = new Triangle(p3,p8,p7,n3);
-    t1->setMaterial(test);
-    t2->setMaterial(test);
+    t1->setMaterial(test2);
+    t2->setMaterial(test2);
     ret->addObject(t1);
     ret->addObject(t2);
 
