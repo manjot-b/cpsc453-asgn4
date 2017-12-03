@@ -71,29 +71,32 @@ Scene * Scene::initTestScene(int N){
     test->type = DIFFUSE;
     test->kr = 0.03;
     test->ambient = Color(1.0,1.0,0.0,1.0);
-    test->diffuse = Color(0.0,0.6,0.6,1.0);
-    test->specular = Color(0.2,0.2,0.2,1.0);
+    test->diffuse = Color(1.0,1.0,0.0,1.0);
+    test->specular = Color(0.1,0.1,0.1,1.0);
     
     Material * test1 = new Material();
     test1->kr = 0.03;
     test1->type = DIFFUSE;
-    test1->ambient = Color(0.3,0.3,0.3,1.0);
-    test1->diffuse = Color(0.8,0.8,0.8,1.0);
+    test1->ambient = Color(0.1,0.4,0.1,1.0);
+    test1->diffuse = Color(0.1,0.4,0.1,1.0);
     test1->specular = Color(0.2,0.2,0.2,1.0);
+    test1->shininess = 16;
+
     Material * test2 = new Material();
     test2->kr = 0.25;
     test2->type = DIFFUSE;
     test2->ambient = Color(0.4,0.25,0.8,1.0);
-    test2->diffuse = Color(0.5,0.1,0.1,1.0);
+    test2->diffuse = Color(0.4,0.25,0.8,1.0);
     test2->specular = Color(0.2,0.2,0.2,1.0);
 
     Material* sphere = new Material();
     sphere->type = REFLECTIVE;
     // give sphere some reflectivity;
     sphere->kr = 0.85;
-    sphere->ambient = Color(1.00,0.00,0.00,1.0);
-    sphere->diffuse = Color(0.0,0.0,0.0,1.0);
-    sphere->specular = Color(0.0,0.0,0.0,1.0);
+    sphere->ambient = Color(0.5,0.00,0.00,1.0);
+    sphere->diffuse = Color(0.2,0.2,0.2,1.0);
+    sphere->specular = Color(0.9,0.9,0.9,1.0);
+    sphere->shininess = 1000;
     Object * s1 = new Sphere(Point(400.0,130.0,320.0),120.0);
     // Make points for square
     Point p1 = Point(0,0,0);
@@ -152,6 +155,8 @@ Scene * Scene::initTestScene(int N){
     // Add light sources
     ret->addLight(Point(185.0,2000.0,169.0));
     ret->addLight(Point(400.0,2000.0,320.0));
+    //ret->addLight(Point(185.0,400.0,900));
+    
 
     // set Camera location
     ret->setCamera(new Point(278,273,-500));
@@ -161,13 +166,10 @@ Scene * Scene::initTestScene(int N){
     Point v2 = Point(52,165,225);
     Point v3 = Point(210,165,272);
     Point v4 = Point(260,165,114);
-    Point v5 = Point(260,0,114);
-    Point v6 = Point(260,165,114);
-    Point v7 = Point(210,165,272);
-    Point v8 = Point(210,0,272);
-    Point v9 = Point(100,0,65);
-    Point v10 = Point(100,165,65);
-    Point v11 = Point(52,0,225);
+    Point v5 = Point(100,0,65);
+    Point v6 = Point(52,0,225);
+    Point v7 = Point(210,0,272);
+    Point v8 = Point(260,0,114);
     
     Point no1 = Point(0.0,1.0,0.0);
     Point no2 = Point(0.0,0.0,-1.0);
@@ -175,36 +177,41 @@ Scene * Scene::initTestScene(int N){
     Point no4 = Point(1.0,0.0,0.0);
     Point no5 = Point(0.0,0.0,1.0);
     
+    // top square
     t1 = new Triangle(v2,v3,v1,no1);
     t2 = new Triangle(v4,v1,v3,no1);
-    ret->addObject(t1);
-    ret->addObject(t2);
-    t1->setMaterial(test1);
-    t2->setMaterial(test1);
-    
-    t1 = new Triangle(v7,v4,v9,no4);
-    t2 = new Triangle(v5,v7,v8,no4);
     t1->setMaterial(test1);
     t2->setMaterial(test1);
     ret->addObject(t1);
     ret->addObject(t2);
     
-    t1 = new Triangle(v9,v10,v4,no4);
-    t2 = new Triangle(v9,v4,v5,no4);
+    // front
+    t1 = new Triangle(v5,v1,v4,no2);
+    t2 = new Triangle(v5,v4,v8,no2);
     t1->setMaterial(test1);
     t2->setMaterial(test1);
     ret->addObject(t1);
     ret->addObject(t2);
     
-    t1 = new Triangle(v11,v2,v10,no4);
-    t2 = new Triangle(v11,v2,v9,no4);
+    // left
+    t1 = new Triangle(v1,v2,v6,no3);
+    t2 = new Triangle(v1,v6,v5,no3);
     t1->setMaterial(test1);
     t2->setMaterial(test1);
     ret->addObject(t1);
     ret->addObject(t2);
     
-    t1 = new Triangle(v8,v7,v2,no4);
-    t2 = new Triangle(v8,v7,v11,no4);
+    // right
+    t1 = new Triangle(v4,v3,v7,no4);
+    t2 = new Triangle(v4,v7,v8,no4);
+    t1->setMaterial(test1);
+    t2->setMaterial(test1);
+    ret->addObject(t1);
+    ret->addObject(t2);
+    
+    // back
+    t1 = new Triangle(v2,v3,v7,no5);
+    t2 = new Triangle(v2,v7,v6,no5);
     t1->setMaterial(test1);
     t2->setMaterial(test1);
     ret->addObject(t1);

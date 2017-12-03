@@ -1,4 +1,5 @@
 #include "RayTracer.h"
+#include <algorithm>
 #include <iostream>
 
 using namespace std;
@@ -49,17 +50,44 @@ Color RayTracer::trace(Ray r, int depth){
 }
 
 // Local Phong illumination at a point.
-Color RayTracer::Phong(Point normal,Point p, Ray r, Material * m, Object * o){
-  Color ret = Color(0.0, 0.0, 0.0, 0.0);
+Color RayTracer::Phong(Point normal, Point p, Ray r, Material * m, Object * o){
+  Color totalLight = Color(0.0, 0.0, 0.0, 1.0);
   
   // YOUR CODE HERE.
   // There is ambient lighting irrespective of shadow.
   // Specular-diffuse lighting only if the point is not in shadow
   
   // Remember, you need to account for all the light sources.
-  ret = o->getMaterial()->ambient * 1.0;
   
-  return ret;
+  double intensity = 0.65; // 1.0 for r g and b
+  
+  // DIFFUSE and SPECULAR
+  Color diffuse = Color(0.0, 0.0, 0.0, 1.0);
+  Color specular = Color(0.0, 0.0, 0.0, 1.0);
+  normal.normalize();
+  
+      
+  for (unsigned int i = 0; i < scene->lights.size(); i++)
+  {
+    // DIFFUSE
+    Point toLight = scene->lights[i] - p;
+    toLight.normalize();
+    diffuse = diffuse + m->diffuse  * intensity * max(0.0, normal * toLight);
+  
+    // SPECULAR
+    Point reflected = normal * 2 * (toLight * normal) - toLight;
+    Point toCamera = r.v * -1;
+    toCamera.normalize();
+    double specFactor = max( reflected * toCamera, 0.0);
+    double dampedFactor = pow(specFactor, m->shininess);
+    specular = specular + m->specular * intensity * dampedFactor; 
+  }
+
+  //AMBIENT
+  Color ambient = m->ambient * intensity;
+  
+  totalLight = ambient + diffuse + specular;
+  return totalLight;
 }
 
 

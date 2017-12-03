@@ -17,13 +17,14 @@ class Material {
     
 public:
     Color diffuse, ambient, specular;
-    double kr,kt,kd;
+    double kr,kt,kd, shininess;
     Type type; 
     // this is for materials to decide!
     Material(){
         kr = 0.0;
         kt = 0.0;
         kd = 0.0;
+        shininess = 1;
     }
     virtual Color getAmbient(Point p){ return ambient;}
     Color getDiffuse(Point p){return diffuse;}
