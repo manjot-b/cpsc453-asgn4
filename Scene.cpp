@@ -98,6 +98,7 @@ Scene * Scene::initTestScene(int N){
     sphere->specular = Color(0.9,0.9,0.9,1.0);
     sphere->shininess = 1000;
     Object * s1 = new Sphere(Point(400.0,130.0,320.0),120.0);
+    
     // Make points for square
     Point p1 = Point(0,0,0);
     Point p2 = Point(550,0,0);

@@ -92,14 +92,16 @@ Point Sphere::getIntersection(Ray r){
     double tPos = (-(r.v * origMinCenter) + sqrtDiscrim) /  (r.v * r.v);
     double tNeg = (-(r.v * origMinCenter) - sqrtDiscrim) /  (r.v * r.v);
 
-    // if (tPos < EPS)
-    // {
-    //     if (tNeg < EPS)
-    //         return Point::Infinite(); 
-
-    // }
-
-    double t = tPos < tNeg ? tPos : tNeg;
+    double t;
+    
+    // if (tPos <= EPS && tNeg <= EPS)
+    //     return Point::Infinite();
+    // else if (tPos <= EPS)
+    //     t = tNeg;
+    // else if (tNeg <= EPS)
+    //     t = tPos;
+    // else
+        t = tPos < tNeg ? tPos : tNeg;
 
     Point hit = r.p + (r.v * t);
     return hit;

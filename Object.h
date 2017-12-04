@@ -1,5 +1,6 @@
 #include <vector>
 #include <cstdlib>
+#include <string>
 
 #include "Material.h"
 using namespace std;
@@ -16,6 +17,7 @@ public:
     bool isLightSource(){ return isLight; }
     virtual Point getIntersection(Ray) =0;
     virtual Point getNormal(Point) =0;
+
 };
 
 
