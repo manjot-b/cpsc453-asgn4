@@ -78,13 +78,14 @@ Color RayTracer::Phong(Point normal, Point p, Ray r, Material * m, Object * o){
     // if (intersect(shadowRay) == NULL)   // shadow ray doesn't intersect with any other object
     {
       // DIFFUSE
-      diffuse = diffuse + m->diffuse  * intensity * max(0.0, normal * toLight);
+      diffuse = diffuse + (m->diffuse  * intensity * max(0.0, normal * toLight));
     
       // SPECULAR
-      Point reflected = normal * 2 * (toLight * normal) - toLight;
       Point toCamera = r.v * -1;
       toCamera.normalize();
-      double specFactor = max( reflected * toCamera, 0.0);
+      Point half = toCamera + toLight;
+      half.normalize();   // divide by length
+      double specFactor = max( half * normal, 0.0);
       double dampedFactor = pow(specFactor, m->shininess);
       specular = specular + m->specular * intensity * dampedFactor; 
     }
