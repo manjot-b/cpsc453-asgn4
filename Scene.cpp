@@ -69,7 +69,7 @@ Scene * Scene::initTestScene(int N){
     // Add in sphere
     Material * test = new Material();
     test->type = DIFFUSE;
-  test->kr = 0.03;
+    test->kr = 0.03;
     test->ambient = Color(0.0,0.0,0.0,1.0);
     test->diffuse = Color(0.0,0.6,0.6,1.0);
     test->specular = Color(0.2,0.2,0.2,1.0);
@@ -77,12 +77,12 @@ Scene * Scene::initTestScene(int N){
     Material * test1 = new Material();
     test1->kr = 0.03;
     test1->type = DIFFUSE;
-    test1->ambient = Color(0.3,0.3,0.3,1.0);
-    test1->diffuse = Color(0.8,0.8,0.8,1.0);
-    test1->specular = Color(0.2,0.2,0.2,1.0);
+    test1->ambient = Color(0.15,0.15,0.25,1.0);
+    test1->diffuse = Color(0.2,0.2,0.6,1.0);
+    test1->specular = Color(0.4,0.4,0.7,1.0);
     Material * test2 = new Material();
     test2->kr = 0.25;
-    test2->type = DIFFUSE;
+    test2->type = REFLECTIVE;
     test2->ambient = Color(0.4,0.25,0.25,1.0);
     test2->diffuse = Color(0.5,0.1,0.1,1.0);
     test2->specular = Color(0.2,0.2,0.2,1.0);

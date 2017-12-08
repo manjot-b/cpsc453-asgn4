@@ -9,8 +9,8 @@ using std::ofstream;
 using std::ifstream;
 
 // store width and height of the render
-int width = 256;
-int height = 256;
+int width = 512;
+int height = 512;
 
 // Our ray tracer
 RayTracer * rt;

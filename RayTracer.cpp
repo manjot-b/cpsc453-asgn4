@@ -35,16 +35,22 @@ Object * RayTracer::intersect(Ray r){
 // Trace a ray recursively
 Color RayTracer::trace(Ray r, int depth){
   Color rad=Color(0.0,0.0,0.0,0.0);
-  
+  if (depth > maxdepth) return rad;
   // YOUR CODE FOR RECURSIVE RAY TRACING GOES HERE
-  Object *inter;
-  inter = intersect(r);
+  Object *inter = intersect(r);
   if (inter == NULL)
      return rad;
 
-  Point interPt;
-  interPt = inter->getIntersection(r);
-  rad = rad + Phong(inter->getNormal(interPt), interPt, r, inter->getMaterial(), inter);
+  Point interPt = inter->getIntersection(r);
+  Point norm = inter->getNormal(interPt);
+
+  rad = rad + Phong(norm, interPt, r, inter->getMaterial(), inter);
+  if (inter->getMaterial()->type == REFLECTIVE)
+  {
+    Ray refl = r.reflect(norm, interPt);
+    refl = Ray(refl.p + refl.v * 1E-2, refl.v);
+    rad = rad + trace(refl, ++depth) * inter->getMaterial()->kr;
+  }
 
   return rad;
 }
@@ -78,11 +84,11 @@ Color RayTracer::Phong(Point normal, Point p, Ray r, Material * m, Object * o){
     // cout << "P: X " << p.x << " Y " << p.y << " Z " << p.z << endl;
     
     Object *inter = NULL;
-    bool inShadow =  normal * toLightNorm < 1E-4;
+    bool inShadow =  normal * toLightNorm < 1E-6;
     
     if (!inShadow)  // check if object in between point and light
     {
-      Ray shadowRay = Ray(p + toLightNorm * 1E-1 , toLight);
+      Ray shadowRay = Ray(p + toLightNorm * 1E-2 , toLight);
       
       // cout << "New: X " << shadowRay.p.x << " Y " << shadowRay.p.y << " Z " << shadowRay.p.z << endl;     
       inter = intersect(shadowRay);
