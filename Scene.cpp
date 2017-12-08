@@ -98,6 +98,7 @@ Scene * Scene::initTestScene(int N){
     sphere->specular = Color(0.9,0.9,0.9,1.0);
     sphere->shininess = 1000;
     Object * s1 = new Sphere(Point(400.0,130.0,320.0),120.0);
+    s1->test = "s1";
     
     // Make points for square
     Point p1 = Point(0,0,0);
@@ -119,6 +120,8 @@ Scene * Scene::initTestScene(int N){
     // Add in bottom square
     Object * t1 = new Triangle(p1,p3,p2,n2);
     Object * t2 = new Triangle(p4,p2,p3,n2);
+    t1->test = "bo1";
+    t2->test = "bo2";
     ret->addObject(t1);
     ret->addObject(t2);
     t1->setMaterial(test);
@@ -134,6 +137,8 @@ Scene * Scene::initTestScene(int N){
     t2 = new Triangle(p3,p8,p7,n3);
     t1->setMaterial(test2);
     t2->setMaterial(test2);
+    t1->test = "l1";
+    t2->test = "l2";
     ret->addObject(t1);
     ret->addObject(t2);
 
@@ -142,6 +147,8 @@ Scene * Scene::initTestScene(int N){
     t2 = new Triangle(p4,p7,p6,n5);
     t1->setMaterial(test);
     t2->setMaterial(test);
+    t1->test = "b1";
+    t2->test = "b2";
     ret->addObject(t1);
     ret->addObject(t2);
 
@@ -150,6 +157,8 @@ Scene * Scene::initTestScene(int N){
     t2 = new Triangle(p4,p5,p6,n4);
     t1->setMaterial(test2);
     t2->setMaterial(test2);
+    t1->test = "r1";
+    t2->test = "r2";
     ret->addObject(t1);
     ret->addObject(t2);
 
@@ -181,6 +190,8 @@ Scene * Scene::initTestScene(int N){
     // top square
     t1 = new Triangle(v2,v3,v1,no1);
     t2 = new Triangle(v4,v1,v3,no1);
+    t1->test = "st1";
+    t2->test = "st2";
     t1->setMaterial(test1);
     t2->setMaterial(test1);
     ret->addObject(t1);
@@ -191,6 +202,8 @@ Scene * Scene::initTestScene(int N){
     t2 = new Triangle(v5,v4,v8,no2);
     t1->setMaterial(test1);
     t2->setMaterial(test1);
+    t1->test = "ft1";
+    t2->test = "ft2";
     ret->addObject(t1);
     ret->addObject(t2);
     
@@ -199,6 +212,8 @@ Scene * Scene::initTestScene(int N){
     t2 = new Triangle(v1,v6,v5,no3);
     t1->setMaterial(test1);
     t2->setMaterial(test1);
+    t1->test = "lt1";
+    t2->test = "lt2";
     ret->addObject(t1);
     ret->addObject(t2);
     
@@ -207,6 +222,8 @@ Scene * Scene::initTestScene(int N){
     t2 = new Triangle(v4,v7,v8,no4);
     t1->setMaterial(test1);
     t2->setMaterial(test1);
+    t1->test = "rt1";
+    t2->test = "rt2";
     ret->addObject(t1);
     ret->addObject(t2);
     
@@ -215,6 +232,8 @@ Scene * Scene::initTestScene(int N){
     t2 = new Triangle(v2,v7,v6,no5);
     t1->setMaterial(test1);
     t2->setMaterial(test1);
+    t1->test = "bt1";
+    t2->test = "bt2";
     ret->addObject(t1);
     ret->addObject(t2);
     

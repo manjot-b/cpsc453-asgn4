@@ -73,9 +73,25 @@ Color RayTracer::Phong(Point normal, Point p, Ray r, Material * m, Object * o){
   {
     Point toLight = scene->lights[i] - p;
     toLight.normalize();
-    Ray shadowRay = Ray(p, toLight);
     
-    // if (intersect(shadowRay) == NULL)   // shadow ray doesn't intersect with any other object
+    Ray shadowRay;
+    Object *shadowInter;
+    double offset = 0;
+    //do 
+    //{
+      shadowRay = Ray(p + (toLight * 60), toLight);
+      shadowInter = intersect(shadowRay);
+      offset += 1;
+    //} while (shadowInter == o);
+
+    if (shadowInter == o)
+      cout << "ITSELF " << o->test << endl;
+    if (shadowInter != o && shadowInter != NULL)
+    {
+      cout << "CURRENT " << o->test << endl << "INTER " << shadowInter->test << endl;
+    }
+
+    if (shadowInter == o || shadowInter == NULL)   // shadow ray doesn't intersect with any other object
     {
       // DIFFUSE
       diffuse = diffuse + m->diffuse  * intensity * max(0.0, normal * toLight);
