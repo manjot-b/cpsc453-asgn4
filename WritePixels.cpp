@@ -6,10 +6,12 @@
 
 using std::ofstream;
 using std::ifstream;
-
+using namespace std;
 // store width and height of the render
 int width = 512;
 int height = 512;
+int maxDepth = 4;
+double fov = 55.0;
 
 // Our ray tracer
 RayTracer * rt;
@@ -19,20 +21,29 @@ int main(int argc, char *argv[]){
    
 	if ( argc < 2)
 	{
-		cerr << "Usage: ./rayTracer <--default / --yours>" << endl;
+		cerr << "Usage: ./rayTracer <--default / --yours> <width> <height> <max depth> <fov>" << endl;
 		return -1;
 	}
-	else if (strcmp(argv[1], "--default") == 0)
+	
+	switch(argc)	// leave at default values if args not specified
+	{
+		case 6 : fov = atoi(argv[5]);
+		case 5 : maxDepth = atoi(argv[4]);
+		case 4 : height = atoi(argv[3]);
+		case 3 : width = atoi(argv[2]);
+		default : break;
+	}
+
+	if (strcmp(argv[1], "--default") == 0)
 	{
 		// Test scene with max depth of 4 and sampling of 1
-		// rt = new RayTracer(Scene::initTestScene(width),12,4);
-		rt = new RayTracer(Scene::initTestScene(width),4,4);
+		rt = new RayTracer(Scene::initTestScene(width, fov), maxDepth,4);
 		filename = "default.ppm";
 	}
 	else if (strcmp(argv[1], "--yours") == 0)
 	{
 		// Test scene with max depth of 4 and sampling of 1
-		rt = new RayTracer(Scene::customScene(width),12,4);
+		rt = new RayTracer(Scene::customScene(width, fov), maxDepth,4);
 		filename = "yours.ppm";
 	}
 	else 
@@ -41,10 +52,11 @@ int main(int argc, char *argv[]){
 		return -1;
 	}
 
+
 	float pixels[width][height][4];
     for(int ctr = 0; ctr < height*width; ctr++){
     	int i = ctr % width;
-    	int j = ctr / width;
+		int j = ctr / width;
     	Color rad = rt->calculate(i,j);
     	pixels[i][j][0] = rad.r; //Red
     	pixels[i][j][1] = rad.g; //Green

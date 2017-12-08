@@ -62,10 +62,10 @@ Ray Scene::makeRay(double xo, double yo){
 
 // A test scene based on description handed out with the assignment.
 // Please modify material properties as necessary to test your ray tracer.
-Scene * Scene::initTestScene(int N){
+Scene * Scene::initTestScene(int N, double fov){
 
    // make new scene with up vector, direction vector and fov
-    Scene * ret = new Scene(new Point(0,1.0,0),new Point(0,0,1.0),55.0,N);  
+    Scene * ret = new Scene(new Point(0,1.0,0),new Point(0,0,1.0), fov, N);  
     // Add in sphere
     Material * test = new Material();
     test->type = DIFFUSE;
@@ -215,10 +215,10 @@ Scene * Scene::initTestScene(int N){
     return ret;
 }
 
-Scene * Scene::customScene(int N){
+Scene * Scene::customScene(int N, double fov){
 
     // make new scene with up vector, direction vector and fov
-    Scene * ret = new Scene(new Point(0,1.0,0),new Point(0,0,1.0),55.0,N);  
+    Scene * ret = new Scene(new Point(0,1.0,0),new Point(0,0,1.0), fov,N);  
     // Add in sphere
     Material * test = new Material();
     test->type = DIFFUSE;
