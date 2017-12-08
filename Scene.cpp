@@ -98,6 +98,7 @@ Scene * Scene::initTestScene(int N){
     sphere->specular = Color(0.9,0.9,0.9,1.0);
     sphere->shininess = 32;
     Object * s1 = new Sphere(Point(400.0,130.0,320.0),120.0);
+    s1->type = "sphere";
     
     // Make points for square
     Point p1 = Point(0,0,0);
@@ -154,9 +155,9 @@ Scene * Scene::initTestScene(int N){
     ret->addObject(t2);
 
     // Add light sources
-    //ret->addLight(Point(185.0,2000.0,169.0));
-    //ret->addLight(Point(400.0,2000.0,320.0));
-    ret->addLight(Point(185.0,400.0, 100));
+    ret->addLight(Point(185.0,2000.0,169.0));
+    ret->addLight(Point(400.0,2000.0,320.0));
+    //ret->addLight(Point(185.0,400.0, 100));
     
 
     // set Camera location

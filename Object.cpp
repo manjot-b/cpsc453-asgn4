@@ -1,6 +1,9 @@
 #include "Object.h"
 #include <cmath>
 
+#include <iostream>
+using namespace std;
+
 void Object::setMaterial(Material * mat){
     m = mat;   
 }
@@ -22,7 +25,38 @@ Sphere::Sphere(Point p, double r){
 }
 #define EPS 1E-6
 
-Point Triangle::getIntersection(Ray r){
+Point Triangle::getIntersection(Ray r)
+{
+    // Moller trumbor triangle intersection algorithm
+    Point edge1, edge2, h, s, q;
+    float a,f,u,v;
+    edge1 = p2 - p1;
+    edge2 = p3 - p1;
+    h = r.v.cross(edge2);
+    a = edge1 * h;
+    if (a > -EPS && a < EPS)
+        return Point::Infinite();
+    f = 1/a;
+    s = r.p - p1;
+    u = f * (s * h);
+    if (u < 0.0 || u > 1.0)
+        return Point::Infinite();
+    q = s.cross(edge1);
+    v = r.v * q * f;
+    if (v < 0.0 || u + v > 1.0)
+        return Point::Infinite();
+    // At this stage we can compute t to find out where the intersection point is on the line.
+    float t = edge2 * q * f;
+    if (t > EPS) // ray intersection
+    {
+        Point hit = r.p + r.v * t; 
+        return hit;
+    }
+    else // This means that there is a line intersection but not a ray intersection.
+        return Point::Infinite();
+}
+
+/*Point Triangle::getIntersection(Ray r){
 
 	// YOUR INTERSECTION CODE HERE.
 	// RETURN THE POINT OF INTERSECTION FOR THIS TRIANGLE.
@@ -48,20 +82,27 @@ Point Triangle::getIntersection(Ray r){
     double l = p1MinOrig.z;
 
     double detirm = a * (e*i -h*f) + b * (g*f - d*i) + c * (d*h - e*g);
-    if (detirm > -EPS && detirm < EPS)      // equals zero
+    if (abs(detirm) < EPS)      // equals zero
         return Point::Infinite();
     
     double beta = (j * (e*i - h*f) + k * (g*f - d*i) + l * (d*h - e*g)) / detirm;
-    if (beta < EPS || beta > 1)
+    if (beta < EPS || beta - 1 > EPS)
         return Point::Infinite();
     
     double lambda = (i * (a*k - j*b) + h * (j*c - a*l) + g * (b*l - k*c)) / detirm;
-    if (lambda < EPS || lambda > 1 - beta)
+    if (lambda < EPS || lambda + beta - 1 > EPS)
         return Point::Infinite();
 
-    Point hit = p1 + ((p2 - p1) * beta) + ((p3 - p1) * lambda);
+    double t = -(f * (a*k -j*b) + e * (j*c - a*l) + d * (b*l - k*c) / detirm);
+    // cout << "T " << t << endl;
+
+    if (t < EPS)
+        return Point::Infinite();
+
+    // Point hit = p1 + (p2 - p1) * beta + (p3 - p1) * lambda;
+    Point hit = r.p + r.v * t;
     return hit;
-}
+}*/
 
 Point Triangle::getNormal(Point p){
     // Point one = p1-p2;
@@ -81,32 +122,71 @@ Point Sphere::getNormal(Point p){
     return ret;
 }
 
-Point Sphere::getIntersection(Ray r){
-
-	// YOUR INTERSECTION CODE HERE.
-	// RETURN THE POINT OF INTERSECTION FOR THIS SPHERE.
+Point Sphere::getIntersection(Ray r)
+{
+    // at^2 + bt + c 
     Point origMinCenter = r.p - center;
-    double discrim = (r.v * origMinCenter) * (r.v * origMinCenter) - 
-                     (r.v * r.v) * ((origMinCenter * origMinCenter) - radius * radius);
-    if (discrim <= EPS)     // less than zero
-        return Point::Infinite();
+	double a = r.v * r.v;
+    double b = r.v * origMinCenter * 2;
+    double c = origMinCenter * origMinCenter - radius*radius;
 
-    double sqrtDiscrim = sqrt(discrim);
-    double tPos = (-(r.v * origMinCenter) + sqrtDiscrim) /  (r.v * r.v);
-    double tNeg = (-(r.v * origMinCenter) - sqrtDiscrim) /  (r.v * r.v);
-
-    double t;
+    double discr = b * b - 4 * a * c;
     
-    // if (tPos <= EPS && tNeg <= EPS)
-    //     return Point::Infinite();
-    // else if (tPos <= EPS)
-    //     t = tNeg;
-    // else if (tNeg <= EPS)
-    //     t = tPos;
-    // else
-        t = tPos < tNeg ? tPos : tNeg;
+    double t, t1, t2;
+    if (discr < 0)
+        return Point::Infinite();
+    else if (discr < EPS)
+        t1 = t2 = -0.5 * b / a;
+    else
+    {
+        double q = b > 0 ? 
+            -0.5 * (b + sqrt(discr)) : 
+            -0.5 * (b - sqrt(discr));
+        t1 = q / a;
+        t2 = c / q;
+    }
+
+    if (t1 < EPS && t2 < EPS)
+        return Point::Infinite();
+    else if (t1 < EPS)
+        t = t2;
+    else if (t2 < EPS)
+        t = t1;
+    else
+        t = t1 < t2 ? t1 : t2;
 
     Point hit = r.p + (r.v * t);
     return hit;
 }
+
+// Point Sphere::getIntersection(Ray r){
+
+// 	// YOUR INTERSECTION CODE HERE.
+// 	// RETURN THE POINT OF INTERSECTION FOR THIS SPHERE.
+//     Point origMinCenter = r.p - center;
+//     double discrim = (r.v * origMinCenter) * (r.v * origMinCenter) - 
+//                      (r.v * r.v) * ((origMinCenter * origMinCenter) - radius * radius);
+//     if (discrim < EPS)     // less than zero
+//         return Point::Infinite();
+
+//     double sqrtDiscrim = sqrt(discrim);
+//     double tPos = (-(r.v * origMinCenter) + sqrtDiscrim) /  (r.v * r.v);
+//     double tNeg = (-(r.v * origMinCenter) - sqrtDiscrim) /  (r.v * r.v);
+
+//     double t;
+    
+//     cout << " pos " << tPos << " neg " << tNeg << " ";
+//     if (tPos < EPS && tNeg < EPS)
+//         return Point::Infinite();
+//     else if (tPos < EPS)
+//         t = tNeg;
+//     else if (tNeg < EPS)
+//         t = tPos;
+//     else
+//         t = tPos < tNeg ? tPos : tNeg;
+
+//     cout << "T " << t << endl; 
+//     Point hit = r.p + (r.v * t);
+//     return hit;
+// }
 

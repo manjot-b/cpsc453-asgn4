@@ -40,7 +40,7 @@ Color RayTracer::trace(Ray r, int depth){
   Object *inter;
   inter = intersect(r);
   if (inter == NULL)
-    return rad;
+     return rad;
 
   Point interPt;
   interPt = inter->getIntersection(r);
@@ -72,10 +72,38 @@ Color RayTracer::Phong(Point normal, Point p, Ray r, Material * m, Object * o){
   for (unsigned int i = 0; i < scene->lights.size(); i++)
   {
     Point toLight = scene->lights[i] - p;
-    toLight.normalize();
-    Ray shadowRay = Ray(p, toLight);
+    Point toLightNorm = toLight;
+    toLightNorm.normalize();
     
-    // if (intersect(shadowRay) == NULL)   // shadow ray doesn't intersect with any other object
+    // cout << "P: X " << p.x << " Y " << p.y << " Z " << p.z << endl;
+    
+    Object *inter = NULL;
+    bool inShadow =  normal * toLightNorm < 1E-4;
+    
+    if (!inShadow)  // check if object in between point and light
+    {
+      Ray shadowRay = Ray(p + toLightNorm * 1E-1 , toLight);
+      
+      // cout << "New: X " << shadowRay.p.x << " Y " << shadowRay.p.y << " Z " << shadowRay.p.z << endl;     
+      inter = intersect(shadowRay);
+      Point interPt;
+      if (inter != NULL) 
+      {
+        inShadow = true;
+        interPt = inter->getIntersection(shadowRay);
+      }
+      // if (o->type == "sphere" && inter != NULL && inter->type == "sphere") 
+      // {
+      //  cout << "LIGHT: X " << toLightNorm.x << " Y " << toLightNorm.y << " Z " << toLightNorm.z << endl
+      //   << "RAY: X " << shadowRay.p.x << " Y " << shadowRay.p.y << " Z " << shadowRay.p.z << endl
+      //   << "ORIG: X " << p.x << " Y " << p.y << " Z " << p.z << endl
+      //   << "INTER: X " << interPt.x << " Y " << interPt.y << " Z " << interPt.z << endl; 
+      // }
+    }
+
+    toLight.normalize();
+    
+    if (!inShadow)   // shadow ray doesn't intersect with any other object
     {
       // DIFFUSE
       diffuse = diffuse + (m->diffuse  * intensity * max(0.0, normal * toLight));

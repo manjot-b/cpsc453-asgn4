@@ -16,7 +16,24 @@ int height = 256;
 RayTracer * rt;
 
 int main(){
-    // Test scene with max depth of 4 and sampling of 1
+    /*
+	Sphere sp = Sphere(Point(0, 0, 0), 100);
+	Point toL = Point(200, 0, 200);
+	toL.normalize();
+	Ray r = Ray(
+		Point(70.710678, 0, 70.710678), toL);
+	Point inter = sp.getIntersection(r);
+	cout << "Hit: X " << inter.x << " Y " << inter.y << " Z " << inter.z << endl;
+	*/
+	
+	/*Triangle tr = Triangle(Point(0, 0, 0), Point(1, 0, 0), Point(1, 1, 0), Point(0, 0, -1));
+	Ray r = Ray(Point(0.5, 0.25, -10), Point(0, 0, 1));
+	Point inter = tr.getIntersection(r);
+	cout << "Hit: X " << inter.x << " Y " << inter.y << " Z " << inter.z << endl;
+	*/
+
+	
+	// Test scene with max depth of 4 and sampling of 1
     rt = new RayTracer(Scene::initTestScene(width),12,4);
     float pixels[width][height][4];
     for(int ctr = 0; ctr < height*width; ctr++){
@@ -46,5 +63,7 @@ int main(){
 		testimage << "\n";
 	}
 	testimage.close();
+	
+
     return 0;   
 }

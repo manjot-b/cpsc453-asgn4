@@ -18,6 +18,7 @@ public:
     virtual Point getIntersection(Ray) =0;
     virtual Point getNormal(Point) =0;
 
+    string type = "";
 };
 
 

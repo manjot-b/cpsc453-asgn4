@@ -26,7 +26,7 @@ class Scene {
     vector<Object *> objects;
 
 
-    int indexL,indexO;
+    unsigned int indexL,indexO;
 public:
     vector<Point> lights;
     Point * camera;
