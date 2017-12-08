@@ -26,7 +26,7 @@ class Scene {
     vector<Object *> objects;
 
 
-    int indexL,indexO;
+    unsigned int indexL,indexO;
 public:
     vector<Point> lights;
     Point * camera;
@@ -46,6 +46,7 @@ public:
     void setDirectionVector(Point *);
     Ray makeRay(double,double);
     static Scene* initTestScene(int);
+    static Scene* customScene(int);
     // can add your own scene here.
     
 };

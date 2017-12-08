@@ -17,8 +17,6 @@ public:
     bool isLightSource(){ return isLight; }
     virtual Point getIntersection(Ray) =0;
     virtual Point getNormal(Point) =0;
-
-    string test;
 };
 
 

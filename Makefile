@@ -7,8 +7,8 @@ Files:
 	$(CC) -c $(FILES)
 writepixels: Files
 	$(CC) -c WritePixels.cpp
-	$(CC) -o writepixels Color.o Geometry.o Object.o Scene.o RayTracer.o WritePixels.o
+	$(CC) -o rayTracer Color.o Geometry.o Object.o Scene.o RayTracer.o WritePixels.o
 clean:
 	rm -f *.o
-	rm -f writepixels
+	rm -f rayTracer
 	

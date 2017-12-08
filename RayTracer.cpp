@@ -35,16 +35,22 @@ Object * RayTracer::intersect(Ray r){
 // Trace a ray recursively
 Color RayTracer::trace(Ray r, int depth){
   Color rad=Color(0.0,0.0,0.0,0.0);
-  
+  if (depth > maxdepth) return rad;
   // YOUR CODE FOR RECURSIVE RAY TRACING GOES HERE
-  Object *inter;
-  inter = intersect(r);
+  Object *inter = intersect(r);
   if (inter == NULL)
-    return rad;
+     return rad;
 
-  Point interPt;
-  interPt = inter->getIntersection(r);
-  rad = rad + Phong(inter->getNormal(interPt), interPt, r, inter->getMaterial(), inter);
+  Point interPt = inter->getIntersection(r);
+  Point norm = inter->getNormal(interPt);
+
+  rad = rad + Phong(norm, interPt, r, inter->getMaterial(), inter);
+  if (inter->getMaterial()->type == REFLECTIVE)
+  {
+    Ray refl = r.reflect(norm, interPt);
+    refl = Ray(refl.p + refl.v * 1E-2, refl.v);
+    rad = rad + trace(refl, ++depth) * inter->getMaterial()->kr;
+  }
 
   return rad;
 }
@@ -72,35 +78,48 @@ Color RayTracer::Phong(Point normal, Point p, Ray r, Material * m, Object * o){
   for (unsigned int i = 0; i < scene->lights.size(); i++)
   {
     Point toLight = scene->lights[i] - p;
-    toLight.normalize();
+    Point toLightNorm = toLight;
+    toLightNorm.normalize();
     
-    Ray shadowRay;
-    Object *shadowInter;
-    double offset = 0;
-    //do 
-    //{
-      shadowRay = Ray(p + (toLight * 60), toLight);
-      shadowInter = intersect(shadowRay);
-      offset += 1;
-    //} while (shadowInter == o);
-
-    if (shadowInter == o)
-      cout << "ITSELF " << o->test << endl;
-    if (shadowInter != o && shadowInter != NULL)
+    // cout << "P: X " << p.x << " Y " << p.y << " Z " << p.z << endl;
+    
+    Object *inter = NULL;
+    bool inShadow =  normal * toLightNorm < 1E-6;
+    
+    if (!inShadow)  // check if object in between point and light
     {
-      cout << "CURRENT " << o->test << endl << "INTER " << shadowInter->test << endl;
+      Ray shadowRay = Ray(p + toLightNorm * 1E-2 , toLight);
+      
+      // cout << "New: X " << shadowRay.p.x << " Y " << shadowRay.p.y << " Z " << shadowRay.p.z << endl;     
+      inter = intersect(shadowRay);
+      Point interPt;
+      if (inter != NULL) 
+      {
+        inShadow = true;
+        interPt = inter->getIntersection(shadowRay);
+      }
+      // if (o->type == "sphere" && inter != NULL && inter->type == "sphere") 
+      // {
+      //  cout << "LIGHT: X " << toLightNorm.x << " Y " << toLightNorm.y << " Z " << toLightNorm.z << endl
+      //   << "RAY: X " << shadowRay.p.x << " Y " << shadowRay.p.y << " Z " << shadowRay.p.z << endl
+      //   << "ORIG: X " << p.x << " Y " << p.y << " Z " << p.z << endl
+      //   << "INTER: X " << interPt.x << " Y " << interPt.y << " Z " << interPt.z << endl; 
+      // }
     }
 
-    if (shadowInter == o || shadowInter == NULL)   // shadow ray doesn't intersect with any other object
+    toLight.normalize();
+    
+    if (!inShadow)   // shadow ray doesn't intersect with any other object
     {
       // DIFFUSE
-      diffuse = diffuse + m->diffuse  * intensity * max(0.0, normal * toLight);
+      diffuse = diffuse + (m->diffuse  * intensity * max(0.0, normal * toLight));
     
       // SPECULAR
-      Point reflected = normal * 2 * (toLight * normal) - toLight;
       Point toCamera = r.v * -1;
       toCamera.normalize();
-      double specFactor = max( reflected * toCamera, 0.0);
+      Point half = toCamera + toLight;
+      half.normalize();   // divide by length
+      double specFactor = max( half * normal, 0.0);
       double dampedFactor = pow(specFactor, m->shininess);
       specular = specular + m->specular * intensity * dampedFactor; 
     }
