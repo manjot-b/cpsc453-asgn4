@@ -2,11 +2,16 @@
 #include <fstream>
 #include <math.h>
 #include <string.h>
+#include <vector>
+#include <vector>
+#include <thread>
+#include <atomic>
 #include "RayTracer.h"
 
 using std::ofstream;
 using std::ifstream;
 using namespace std;
+
 // store width and height of the render
 int width = 512;
 int height = 512;
@@ -16,17 +21,76 @@ double fov = 55.0;
 // Our ray tracer
 RayTracer * rt;
 string filename;
+float pixels[512][512][4];
+
+vector<thread> threads;
+int threadCount = 8;
+atomic_int progress(0);
+
+void getPixelColors(int id) {
+	int range = height / threadCount;
+	int start = range * id;
+	int end = id == threadCount - 1 ? height : start + range;
+
+    for(int i = start; i < end; i++){
+		for (int j = 0; j < width; j++) {
+			// int i = ctr % width;
+			// int j = ctr / width;
+			Color rad = rt->calculate(i,j);
+			pixels[i][j][0] = rad.r; //Red
+			pixels[i][j][1] = rad.g; //Green
+			pixels[i][j][2] = rad.b; //Blue
+			pixels[i][j][3] = 1.0; //Alpha
+		}
+		progress++;
+    }
+}
+
+// Prints how much of the scene has been calculated
+void printProgress() {
+	
+	int p = progress.load();
+	int percent = (p / float(height)) * 100;
+	int digits = 1;
+	int tmp = percent / 10;
+	
+	while (tmp > 0) {
+		tmp /= 10;
+		digits++;
+	}
+	int prevDigits = digits;
+	cout << "Progress " << progress << "%";
+
+	while (progress < height) {
+		p = progress.load() + 1;		// add 1 so that it will print 100% too
+		percent = (p / float(height)) * 100;
+		
+		digits = 1;
+		tmp = percent / 10;
+		
+		while (tmp > 0) {
+			tmp /= 10;
+			digits++;
+		}
+		
+		cout << string(prevDigits + 1, '\b') << percent << "%";
+		prevDigits = digits;
+	}
+	cout << endl;	
+	
+}
 
 int main(int argc, char *argv[]){
    
 	if ( argc < 2)
 	{
-		cerr << "Usage: ./rayTracer <--default / --yours> <width> <height> <max depth> <fov>" << endl;
+		cerr << " Error. Usage: ./rayTracer <--default / --yours> <width> <height> <max depth> <fov> <threads>" << endl;
 		return -1;
 	}
 	
 	switch(argc)	// leave at default values if args not specified
 	{
+		case 7 : threadCount = atoi(argv[6]);
 		case 6 : fov = atoi(argv[5]);
 		case 5 : maxDepth = atoi(argv[4]);
 		case 4 : height = atoi(argv[3]);
@@ -48,21 +112,22 @@ int main(int argc, char *argv[]){
 	}
 	else 
 	{
-		cerr << "Usage: ./rayTracer <--default / --yours>" << endl;
+		cerr << "Error. Usage: ./rayTracer <--default / --yours> <width> <height> <max depth> <fov> <threads>" << endl;
 		return -1;
 	}
 
+	for (int i = 0; i < threadCount; i++)
+		threads.push_back(thread(getPixelColors, i));
+	
+	cout << "Calculating scene" << endl;
+	printProgress();
+	
+	for (auto &th : threads)	
+		th.join();				// wait for all threads to complete
+	
+	cout << "Done!"<< endl
+		<< "Writing to file: " << filename << endl;
 
-	float pixels[width][height][4];
-    for(int ctr = 0; ctr < height*width; ctr++){
-    	int i = ctr % width;
-		int j = ctr / width;
-    	Color rad = rt->calculate(i,j);
-    	pixels[i][j][0] = rad.r; //Red
-    	pixels[i][j][1] = rad.g; //Green
-    	pixels[i][j][2] = rad.b; //Blue
-    	pixels[i][j][3] = 1.0; //Alpha
-    }
     // once we are done calculating, we will write to file.
     ofstream testimage;
 	testimage.open(filename ,ios::binary | ios::out);
@@ -80,6 +145,7 @@ int main(int argc, char *argv[]){
 		testimage << "\n";
 	}
 	testimage.close();
+	cout << "Done!" << endl;
 	
 
     return 0;   

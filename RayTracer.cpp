@@ -14,14 +14,17 @@ RayTracer::RayTracer(Scene * s, int maxd, int sm){
 // The getIntersection() method is polymorphic. Please provide implementations
 // for all the objects in your scene (see Object.h and Object.cpp).
 Object * RayTracer::intersect(Ray r){
-  scene->startIteration();
+  // scene->startIteration();
   Object * current = NULL;
   Object * minObject = NULL;
   Point inter;
   //Initialize min to infinite point;
   Point min = Point::Infinite();
-  while((current = scene->getNextObject()) != NULL){
+  
+  for(unsigned int i = 0; i < scene->objects.size(); i++){
+    current = scene->objects[i];
     inter = current->getIntersection(r);
+    
     if((inter - r.p).length() > 1E-6){
       if((inter-r.p).length()  < (min-r.p).length()){
         min = inter;

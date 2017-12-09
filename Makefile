@@ -1,5 +1,5 @@
 FILES = Color.cpp Object.cpp RayTracer.cpp Geometry.cpp Scene.cpp
-CC = g++ -Wall -g
+CC = g++ -pthread -Wall -g
 
 all: writepixels
 

@@ -21,13 +21,10 @@ class Scene {
     // where N is the number of pixels in one direction.
     int N;
     
-
-    // A container to hold objects
-    vector<Object *> objects;
-
-
     unsigned int indexL,indexO;
 public:
+    // A container to hold objects
+    vector<Object *> objects;
     vector<Point> lights;
     Point * camera;
 
