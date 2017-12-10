@@ -21,13 +21,12 @@ double fov = 55.0;
 // Our ray tracer
 RayTracer * rt;
 string filename;
-float pixels[512][512][4];
 
 vector<thread> threads;
 int threadCount = 8;
 atomic_int progress(0);
 
-void getPixelColors(int id) {
+void getPixelColors(int id, float *** pixels) {
 	int range = height / threadCount;
 	int start = range * id;
 	int end = id == threadCount - 1 ? height : start + range;
@@ -100,13 +99,14 @@ int main(int argc, char *argv[]){
 
 	if (strcmp(argv[1], "--default") == 0)
 	{
-		// Test scene with max depth of 4 and sampling of 1
+		// Test scene with max depth of 4 and sampling of 
 		rt = new RayTracer(Scene::initTestScene(width, fov), maxDepth,4);
 		filename = "default.ppm";
 	}
 	else if (strcmp(argv[1], "--yours") == 0)
 	{
 		// Test scene with max depth of 4 and sampling of 1
+		if (argc < 6) fov = 75;		
 		rt = new RayTracer(Scene::customScene(width, fov), maxDepth,4);
 		filename = "yours.ppm";
 	}
@@ -116,8 +116,16 @@ int main(int argc, char *argv[]){
 		return -1;
 	}
 
+	// allocate memory for array	
+	float ***pixels = new float**[height];
+	for (int i = 0; i < height; i++) {
+		pixels[i] = new float*[width];
+		for (int j = 0; j < width; j++)
+			pixels[i][j] = new float[4];		// r g b a
+	}
+
 	for (int i = 0; i < threadCount; i++)
-		threads.push_back(thread(getPixelColors, i));
+		threads.push_back(thread(getPixelColors, i, pixels));
 	
 	cout << "Calculating scene" << endl;
 	printProgress();
@@ -147,6 +155,14 @@ int main(int argc, char *argv[]){
 	testimage.close();
 	cout << "Done!" << endl;
 	
+	// clean up
+	for (int i = 0; i < height; i++) {
+		for (int j = 0; j < width; j++) {
+			delete [] pixels[i][j];
+		}
+		delete [] pixels[i];
+	}
+	delete [] pixels;
 
     return 0;   
 }

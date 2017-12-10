@@ -281,10 +281,10 @@ Scene * Scene::customScene(int N, double fov){
     Point p7 = Point(0,550,560);
     Point p8 = Point(0,550,0);
 
-    Point p9 = Point(-200, 0, 200);
-    Point p10 = Point(-200, 550, 200);
-    Point p11 = Point(750, 0, 200);
-    Point p12 = Point(750, 550, 200);
+    Point p9 = Point(-220, 0, 100);
+    Point p10 = Point(-220, 550, 100);
+    Point p11 = Point(770, 0, 100);
+    Point p12 = Point(770, 550, 100);
 
     // make normals for triangle
     Point n1 = Point(0.0,-1.0,0.0);
