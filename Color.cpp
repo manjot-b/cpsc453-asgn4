@@ -13,6 +13,10 @@ Color Color::operator+(Color c){
     return Color(c.r+r,c.g+g,c.b+b,c.a+a);   
 }
 
+Color Color::operator*(Color c) {
+    return Color(r*c.r, g*c.g, b*c.b, a*c.a);
+}
+
 Color Color::operator*(double s){
     return Color(r*s,g*s,b*s,a*s);   
 }

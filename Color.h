@@ -1,3 +1,6 @@
+#ifndef COLOR_H
+#define COLOR_H
+
 #include <algorithm>
 using namespace std;
 class Color {
@@ -8,6 +11,9 @@ public:
     Color(float,float,float,float);
     Color operator+(Color);
     Color operator*(double);
+    Color operator*(Color);
     void clamp(float); // clamp each component of the color to the provided floating value.
     
 };
+
+#endif

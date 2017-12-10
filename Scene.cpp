@@ -29,7 +29,7 @@ Object * Scene::getNextObject(){
     return objects[indexO++];
 }
 
-Point Scene::getNextLight(){
+Light * Scene::getNextLight(){
     indexL++;
     return lights[indexL%lights.size()];    
 }
@@ -38,7 +38,7 @@ void Scene::addObject(Object * o){
     objects.push_back(o);   
 }
 
-void Scene::addLight(Point l){
+void Scene::addLight(Light *l){
     lights.push_back(l);
 }
 
@@ -70,23 +70,27 @@ Scene * Scene::initTestScene(int N, double fov){
     // Add in sphere
     Material * test = new Material();
     test->type = DIFFUSE;
-    test->kr = 0.03;
-    test->ambient = Color(0.0,0.0,0.0,1.0);
-    test->diffuse = Color(0.0,0.6,0.6,1.0);
-    test->specular = Color(0.2,0.2,0.2,1.0);
+    test->kr = 0.3;
+    test->ambient = Color(0.0,0.1,0.1,1.0);
+    test->diffuse = Color(0.0,0.4,0.4,1.0);
+    test->specular = Color(0.8,0.8,0.8,1.0);
+    test->shininess = 0.75;
     
     Material * test1 = new Material();
     test1->kr = 0.03;
     test1->type = DIFFUSE;
     test1->ambient = Color(0.3,0.3,0.3,1.0);
     test1->diffuse = Color(0.8,0.8,0.8,1.0);
-    test1->specular = Color(0.2,0.2,0.2,1.0);
+    test1->specular = Color(0.9,0.9,0.9,1.0);
+    test1->shininess = 8;
+
     Material * test2 = new Material();
     test2->kr = 0.25;
     test2->type = DIFFUSE;
     test2->ambient = Color(0.4,0.25,0.25,1.0);
     test2->diffuse = Color(0.5,0.1,0.1,1.0);
-    test2->specular = Color(0.2,0.2,0.2,1.0);
+    test2->specular = Color(0.8,0.8,0.8,1.0);
+    test2->shininess = 1;
 
     Material* sphere = new Material();
     sphere->type = REFLECTIVE;
@@ -151,8 +155,9 @@ Scene * Scene::initTestScene(int N, double fov){
     ret->addObject(t2);
 
     // Add light sources
-    ret->addLight(Point(185.0,2000.0,169.0));
-    ret->addLight(Point(400.0,2000.0,320.0));
+    ret->addLight(new Light( Point(185.0,2000.0,169.0), Color(0.50, 0.50, 0.50, 1) ));
+    ret->addLight(new Light( Point(400.0,2000.0,320.0), Color(0.45, 0.45, 0.45, 1) ));
+    // ret->addLight(new Light( Point(285.0,400.0, 300), Color(0.65, 0.65, 0.65, 1) ));
 
     // set Camera location
     ret->setCamera(new Point(278,273,-500));
@@ -224,33 +229,48 @@ Scene * Scene::customScene(int N, double fov){
     Material * test = new Material();
     test->type = DIFFUSE;
     test->kr = 0.03;
-    test->ambient = Color(0.0,0.0,0.0,1.0);
-    test->diffuse = Color(0.0,0.6,0.6,1.0);
-    test->specular = Color(0.2,0.2,0.2,1.0);
+    test->ambient = Color(0.0,0.0,0.1,1.0);
+    test->diffuse = Color(0.0,0.3,0.6,1.0);
+    test->specular = Color(0.9,0.9,0.9,1.0);
+    test->shininess = 8;
     
     Material * test1 = new Material();
     test1->kt = 0.85;
-    test1->ior = 1.3;
+    test1->ior = 1.1;
     test1->type = REFRACTIVE;
     test1->ambient = Color(0.15,0.15,0.25,1.0);
     test1->diffuse = Color(0.08,0.08,0.1,1.0);
     test1->specular = Color(0.0,0.0,0.0,1.0);
     Material * test2 = new Material();
-    test2->kr = 0.25;
+    test2->kr = 0.70;
     test2->type = REFLECTIVE;
-    test2->ambient = Color(0.4,0.25,0.25,1.0);
-    test2->diffuse = Color(0.5,0.1,0.1,1.0);
+    test2->ambient = Color(0.05,0.0,0.0,1.0);
+    test2->diffuse = Color(0.1,0.1,0.1,1.0);
     test2->specular = Color(0.2,0.2,0.2,1.0);
 
     Material* sphere = new Material();
     sphere->type = REFLECTIVE;
     // give sphere some reflectivity;
-    sphere->kr = 0.85;
-    sphere->ambient = Color(0.00,0.00,0.00,1.0);
-    sphere->diffuse = Color(0.0,0.0,0.0,1.0);
-    sphere->specular = Color(0.0,0.0,0.0,1.0);
+    sphere->kr = 0.30;
+    sphere->ambient = Color(0.1,0.1,0.00,1.0);
+    sphere->diffuse = Color(0.4,0.1,0.0,07.0);
+    sphere->shininess = 18;
+    sphere->specular = Color(1.0, 1.0, 1.0, 1.0);
     Object * s1 = new Sphere(Point(400.0,130.0,320.0),120.0);
-    
+    s1->setMaterial(sphere);
+    ret->addObject(s1);
+
+    sphere = new Material();
+    sphere->type = REFRACTIVE;
+    sphere->kt = 0.90;
+    sphere->ambient = Color(0.3, 0.3, 0.3, 0);
+    sphere->diffuse = Color(0, 0, 0, 0);
+    sphere->specular = Color(0, 0, 0, 0);
+    sphere->ior = 1.3;
+    s1 = new Sphere(Point(350, 100, 60), 40);
+    s1->setMaterial(sphere);
+    ret->addObject(s1);
+
     // Make points for square
     Point p1 = Point(0,0,0);
     Point p2 = Point(550,0,0);
@@ -260,14 +280,19 @@ Scene * Scene::customScene(int N, double fov){
     Point p6 = Point(560,550,560);
     Point p7 = Point(0,550,560);
     Point p8 = Point(0,550,0);
+
+    Point p9 = Point(-200, 0, 200);
+    Point p10 = Point(-200, 550, 200);
+    Point p11 = Point(750, 0, 200);
+    Point p12 = Point(750, 550, 200);
+
     // make normals for triangle
     Point n1 = Point(0.0,-1.0,0.0);
     Point n2 = Point(0.0,1.0,0.0);
     Point n3 = Point(1.0,0.0,0.0);
     Point n4 = Point(-1.0,0.0,0.0);
     Point n5 = Point(0.0,0.0,-1.0);
-    s1->setMaterial(sphere);
-    ret->addObject(s1);
+    
     // Add in bottom square
     Object * t1 = new Triangle(p1,p3,p2,n2);
     Object * t2 = new Triangle(p4,p2,p3,n2);
@@ -282,8 +307,8 @@ Scene * Scene::customScene(int N, double fov){
     t2->setMaterial(test);
 
     // Add in left square
-    t1 = new Triangle(p3,p1,p8,n3);
-    t2 = new Triangle(p3,p8,p7,n3);
+    t1 = new Triangle(p3,p9,p10,n3);
+    t2 = new Triangle(p3,p10,p7,n3);
     t1->setMaterial(test2);
     t2->setMaterial(test2);
     ret->addObject(t1);
@@ -298,21 +323,20 @@ Scene * Scene::customScene(int N, double fov){
     ret->addObject(t2);
 
     // Add in right square
-    t1 = new Triangle(p2,p4,p5,n4);
-    t2 = new Triangle(p6,p5,p4,n4);
+    t1 = new Triangle(p11,p4,p12,n4);
+    t2 = new Triangle(p6,p12,p4,n4);
     t1->setMaterial(test2);
     t2->setMaterial(test2);
     ret->addObject(t1);
     ret->addObject(t2);
 
     // Add light sources
-    ret->addLight(Point(185.0,2000.0,169.0));
-    ret->addLight(Point(400.0,2000.0,320.0));
-    //ret->addLight(Point(185.0,400.0, 100));
+    ret->addLight(new Light( Point(20.0, 100.0,-320.0), Color(0.75, 0.75, 0.75, 1) ));
+    ret->addLight(new Light( Point(500.0, 300.0,-320.0), Color(0.45, 0.45, 0.45, 1) ));
     
 
     // set Camera location
-    ret->setCamera(new Point(278,273,-500));
+    ret->setCamera(new Point(260,273,-600));
 
     // Now we will add in smaller box
     Point v1 = Point(100,165,65);
@@ -335,8 +359,8 @@ Scene * Scene::customScene(int N, double fov){
     t2 = new Triangle(v4,v1,v3,no1);
     t1->setMaterial(test1);
     t2->setMaterial(test1);
-    ret->addObject(t1);
-    ret->addObject(t2);
+    //ret->addObject(t1);
+    //ret->addObject(t2);
     
     // front
     t1 = new Triangle(v5,v1,v4,no2);

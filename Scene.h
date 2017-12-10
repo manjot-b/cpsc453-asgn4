@@ -1,6 +1,10 @@
+#ifndef SCENE_H
+#define SCENE_H
+
 #include <vector>
 #include <cstdlib>
 #include "Object.h"
+#include "Light.h"
 #include <cmath>
 using namespace std;
 
@@ -25,7 +29,7 @@ class Scene {
 public:
     // A container to hold objects
     vector<Object *> objects;
-    vector<Point> lights;
+    vector<Light *> lights;
     Point * camera;
 
     Color background;
@@ -35,9 +39,9 @@ public:
     Scene(Point*,Point*,double,int);
     void startIteration(void);
     Object * getNextObject(void);
-    Point getNextLight(void);
+    Light * getNextLight(void);
     void addObject(Object *);
-    void addLight(Point);
+    void addLight(Light *);
     void setCamera(Point *);
     void setUpVector(Point *);
     void setDirectionVector(Point *);
@@ -48,3 +52,4 @@ public:
     
 };
 
+#endif

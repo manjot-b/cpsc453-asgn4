@@ -1,3 +1,6 @@
+#ifndef RAYTRACER_H
+#define RAYTRACER_H
+
 #include <vector>
 #include <cstdlib>
 #include "Scene.h"
@@ -17,3 +20,4 @@ public:
     Color Phong(Point,Point,Ray,Material*,Object *); // Local illumination at a point
 };
 
+#endif

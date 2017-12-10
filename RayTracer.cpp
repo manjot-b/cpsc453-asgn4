@@ -44,7 +44,7 @@ Color RayTracer::trace(Ray r, int depth){
   // YOUR CODE FOR RECURSIVE RAY TRACING GOES HERE
   Object *inter = intersect(r);
   if (inter == NULL)
-     return rad;
+     return Color(1.0, 0.65, 0.1, 0);
 
   Point interPt = inter->getIntersection(r);
   Point norm = inter->getNormal(interPt);
@@ -76,11 +76,9 @@ Color RayTracer::Phong(Point normal, Point p, Ray r, Material * m, Object * o){
   // Specular-diffuse lighting only if the point is not in shadow
   
   // Remember, you need to account for all the light sources.
-  
-  double intensity = 0.65; // 1.0 for r g and b
 
   //AMBIENT
-  Color ambient = m->ambient * intensity;
+  Color ambient = m->ambient;
 
   // DIFFUSE and SPECULAR
   Color diffuse = Color(0.0, 0.0, 0.0, 1.0);
@@ -89,7 +87,7 @@ Color RayTracer::Phong(Point normal, Point p, Ray r, Material * m, Object * o){
     
   for (unsigned int i = 0; i < scene->lights.size(); i++)
   {
-    Point toLight = scene->lights[i] - p;
+    Point toLight = scene->lights[i]->pos - p;
     Point toLightNorm = toLight;
     toLightNorm.normalize();
     
@@ -100,29 +98,23 @@ Color RayTracer::Phong(Point normal, Point p, Ray r, Material * m, Object * o){
     
     if (!inShadow)  // check if object in between point and light
     {
-      Ray shadowRay = Ray(p + toLightNorm * 1E-2 , toLight);
-      
-      // cout << "New: X " << shadowRay.p.x << " Y " << shadowRay.p.y << " Z " << shadowRay.p.z << endl;     
+      Ray shadowRay = Ray(p + toLightNorm * EPS , toLight);      
       inter = intersect(shadowRay);
       Point interPt;
+
       if (inter != NULL) 
       {
         inShadow = true;
         interPt = inter->getIntersection(shadowRay);
       }
-      // if (o->type == "sphere" && inter != NULL && inter->type == "sphere") 
-      // {
-      //  cout << "LIGHT: X " << toLightNorm.x << " Y " << toLightNorm.y << " Z " << toLightNorm.z << endl
-      //   << "RAY: X " << shadowRay.p.x << " Y " << shadowRay.p.y << " Z " << shadowRay.p.z << endl
-      //   << "ORIG: X " << p.x << " Y " << p.y << " Z " << p.z << endl
-      //   << "INTER: X " << interPt.x << " Y " << interPt.y << " Z " << interPt.z << endl; 
-      // }
     }
 
     toLight.normalize();
     
     if (!inShadow)   // shadow ray doesn't intersect with any other object
     {
+      Color intensity = scene->lights[i]->intensity;
+
       // DIFFUSE
       diffuse = diffuse + (m->diffuse  * intensity * max(0.0, normal * toLight));
     

@@ -26,7 +26,7 @@ public:
         kt = 0.0;       // transmissive (refraction)
         ior = 1.0;      // index of refraction
         kd = 0.0;
-        shininess = 1;  // for specular
+        shininess = 32;  // for specular
         ior = 1;        // index of refraction
     }
     virtual Color getAmbient(Point p){ return ambient;}

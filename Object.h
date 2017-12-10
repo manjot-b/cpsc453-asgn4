@@ -1,3 +1,6 @@
+#ifndef MATERIAL_H
+#define MATERIAL_H
+
 #include <vector>
 #include <cstdlib>
 #include <string>
@@ -41,3 +44,4 @@ public:
 };
 
 
+#endif
