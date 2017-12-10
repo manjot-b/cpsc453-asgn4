@@ -31,7 +31,8 @@ public:
     // reflect ray wrt normal and point on ray
     Ray reflect(Point, Point);
     Point p,v;  // p is the starting point, v is the (un-normalized) direction vector.
-
+    // refract ray wrt normal and point with index of refraction
+    Ray refract(Point n, Point p, double ior);
     // Can add a transmit function here.
 
 };

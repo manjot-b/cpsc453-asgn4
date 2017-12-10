@@ -105,14 +105,14 @@ Point Triangle::getIntersection(Ray r)
 }*/
 
 Point Triangle::getNormal(Point p){
-    // Point one = p1-p2;
-    // Point two = p1-p3;
-    // Point ret = one.cross(two);
-    // ret.normalize();
-    //return ret;
+    Point one = p1-p2;
+    Point two = p1-p3;
+    Point ret = one.cross(two);
+    ret.normalize();
+    return ret;
 
-    n.normalize();
-    return n;
+    // n.normalize();
+    // return n;
 }
 
 Point Sphere::getNormal(Point p){

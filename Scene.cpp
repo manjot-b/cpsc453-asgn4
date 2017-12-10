@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include <iostream>
 
 void Scene::startIteration(){
     indexO = 0;
@@ -228,11 +229,12 @@ Scene * Scene::customScene(int N, double fov){
     test->specular = Color(0.2,0.2,0.2,1.0);
     
     Material * test1 = new Material();
-    test1->kr = 0.03;
-    test1->type = DIFFUSE;
+    test1->kt = 0.85;
+    test1->ior = 1.3;
+    test1->type = REFRACTIVE;
     test1->ambient = Color(0.15,0.15,0.25,1.0);
-    test1->diffuse = Color(0.2,0.2,0.6,1.0);
-    test1->specular = Color(0.4,0.4,0.7,1.0);
+    test1->diffuse = Color(0.08,0.08,0.1,1.0);
+    test1->specular = Color(0.0,0.0,0.0,1.0);
     Material * test2 = new Material();
     test2->kr = 0.25;
     test2->type = REFLECTIVE;
@@ -296,8 +298,8 @@ Scene * Scene::customScene(int N, double fov){
     ret->addObject(t2);
 
     // Add in right square
-    t1 = new Triangle(p4,p2,p5,n4);
-    t2 = new Triangle(p4,p5,p6,n4);
+    t1 = new Triangle(p2,p4,p5,n4);
+    t2 = new Triangle(p6,p5,p4,n4);
     t1->setMaterial(test2);
     t2->setMaterial(test2);
     ret->addObject(t1);
@@ -367,6 +369,30 @@ Scene * Scene::customScene(int N, double fov){
     t2->setMaterial(test1);
     ret->addObject(t1);
     ret->addObject(t2);
-    
+
+    // add in pyramid
+    Point mid = (v1 + (v3 - v1) * 0.5) + Point(0, 150, 0);
+    Point zero = Point(1,1,1);  // normal for faces, but it is calculated by triangle class
+    // std::cout << mid.x << " " << mid.y << " " << mid.z << std::endl;
+    //front 
+    t1 = new Triangle(v4,v1, mid, zero);
+    t1->setMaterial(test1);
+    ret->addObject(t1);
+
+    // left
+    t1 = new Triangle(v1,v2, mid, zero);
+    t1->setMaterial(test1);
+    ret->addObject(t1);
+
+    // back
+    t1 = new Triangle(v2,v3, mid, zero);
+    t1->setMaterial(test1);
+    ret->addObject(t1);
+
+    // //right
+    t1 = new Triangle(v3,v4, mid, zero);
+    t1->setMaterial(test1);
+    ret->addObject(t1);
+
     return ret;
 }

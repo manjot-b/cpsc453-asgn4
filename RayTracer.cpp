@@ -4,6 +4,8 @@
 
 using namespace std;
 
+#define EPS 1E-2
+
 RayTracer::RayTracer(Scene * s, int maxd, int sm){
   scene = s;
   maxdepth = maxd;
@@ -53,6 +55,13 @@ Color RayTracer::trace(Ray r, int depth){
     Ray refl = r.reflect(norm, interPt);
     refl = Ray(refl.p + refl.v * 1E-2, refl.v);
     rad = rad + trace(refl, ++depth) * inter->getMaterial()->kr;
+  }
+
+  if (inter->getMaterial()->type == REFRACTIVE)
+  {
+    Ray refr = r.refract(norm, interPt, inter->getMaterial()->ior);
+    refr = Ray(refr.p + refr.v * EPS, refr.v);
+    rad = rad + trace(refr, ++depth) * inter->getMaterial()->kt;
   }
 
   return rad;
